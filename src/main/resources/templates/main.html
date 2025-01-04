@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Noti</title>
+    <link rel="stylesheet" type="text/css"
+          href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="shortcut icon" href="img/5173002_alarm_alert_bell_internet_notice_icon.ico" type="image/x-icon">
+</head>
+
+<body>
+<form>
+    <button type="submit" action="/addReminder"></button>
+</form>
+<div class="app-container">
+    <div class="header">
+        Noti
+    </div>
+    <div class="monthAndYear"></div>
+    <div id="calendarModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCalendar()">&times;</span>
+            <h2>Выберите дату</h2>
+            <form>
+                <input type="hidden" name="year" id="selected-year">
+                <input type="hidden" name="month" id="selected-month">
+                <input type="hidden" name="day" id="selected-day">
+                <button type="submit" class="show-by-parameters">Показать Noti</button>
+            </form>
+            <div class="calendar-controls">
+                <select id="yearSelectCalendar">
+                </select>
+                <select id="monthSelectCalendar">
+                    <option value="0">Январь</option>
+                    <option value="1">Февраль</option>
+                    <option value="2">Март</option>
+                    <option value="3">Апрель</option>
+                    <option value="4">Май</option>
+                    <option value="5">Июнь</option>
+                    <option value="6">Июль</option>
+                    <option value="7">Август</option>
+                    <option value="8">Сентябрь</option>
+                    <option value="9">Октябрь</option>
+                    <option value="10">Ноябрь</option>
+                    <option value="11">Декабрь</option>
+                </select>
+            </div>
+            <div id="calendarContainer"></div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="reminder-list" id="reminderList">
+            <div th:each="reminder : ${reminders}" class="reminder-item">
+                <div class="circle"></div>
+                <div class="day">
+                    <div class="day" th:text="${reminder.day}"></div>
+                    .
+                    <div class="month" th:text="${reminder.month}"></div>
+                    <div class="dayOfWeek" th:text="${reminder.dayOfWeek}"></div>
+                    <div class="year" th:text="${reminder.getYear()}" style="display: none"></div>
+                </div>
+                <div class="reminder" th:id="${reminder.id}">
+                    <div>
+                        <div class="title" th:text="${reminder.title}"></div>
+                        <div class="time" th:text="${reminder.time}"></div>
+                    </div>
+                    <div>
+                        <div class="notification"><img src="/img/bell.png" alt=""></div>
+                        <div class="repeat" th:text="${reminder.repeat}"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <button class="add-reminder" onclick="openModal()">+</button>
+</div>
+
+<div id="myModal" class="modal">
+    <form action="/addReminder" method="POST" th:object="${reminder}">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Добавить Noti</h2>
+            <input type="text" id="reminderInput" placeholder="Введите название" th:field="*{title}" required>
+            <div class="date-content">
+                <select id="daySelect" th:field="*{day}">
+                </select>
+                <select id="monthSelect" th:field="*{month}">
+                    <option value="1">Январь</option>
+                    <option value="2">Февраль</option>
+                    <option value="3">Март</option>
+                    <option value="4">Апрель</option>
+                    <option value="5">Май</option>
+                    <option value="6">Июнь</option>
+                    <option value="7">Июль</option>
+                    <option value="8">Август</option>
+                    <option value="9">Сентябрь</option>
+                    <option value="10">Октябрь</option>
+                    <option value="11">Ноябрь</option>
+                    <option value="12">Декабрь</option>
+                </select>
+                <select id="yearSelect" th:field="*{year}">
+                </select>
+            </div>
+            <input type="time" id="reminderTime" th:field="*{time}" required>
+            <select id="reminderRepeat" th:field="*{repeat}" required>
+                <option value="" disabled selected>Выберите частоту напоминания</option>
+                <option value="Один раз">Один раз</option>
+                <option value="Ежедневно">Ежедневно</option>
+                <option value="Еженедельно">Еженедельно</option>
+                <option value="Ежемесячно">Ежемесячно</option>
+            </select>
+            <textarea id="reminderDetails" placeholder="Введите текст" rows="5" th:field="*{description}"></textarea>
+            <button type="submit">Добавить</button>
+        </div>
+    </form>
+</div>
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h2>Редактировать напоминание</h2>
+        <form action="/editReminder" method="post" th:object="${updateReminder}">
+            <input type="hidden" id="editReminderId" name="editReminderId">
+            <input type="text" id="editReminderInput" placeholder="Введите название" th:field="*{title}" required>
+            <div class="date-content">
+                <select id="editDaySelect" th:field="*{day}">
+                </select>
+                <select id="editMonthSelect" th:field="*{month}">
+                    <option value="1">Январь</option>
+                    <option value="2">Февраль</option>
+                    <option value="3">Март</option>
+                    <option value="4">Апрель</option>
+                    <option value="5">Май</option>
+                    <option value="6">Июнь</option>
+                    <option value="7">Июль</option>
+                    <option value="8">Август</option>
+                    <option value="9">Сентябрь</option>
+                    <option value="10">Октябрь</option>
+                    <option value="11">Ноябрь</option>
+                    <option value="12">Декабрь</option>
+                </select>
+                <select id="editYearSelect" th:field="*{year}">
+                </select>
+            </div>
+            <input type="time" id="editReminderTime" th:field="*{time}" required>
+            <select id="editReminderRepeat" th:field="*{repeat}" required>
+                <option value="Один раз">Один раз</option>
+                <option value="Ежедневно">Ежедневно</option>
+                <option value="Еженедельно">Еженедельно</option>
+                <option value="Ежемесячно">Ежемесячно</option>
+            </select>
+            <textarea id="reminderDetailsForEdit" th:field="*{description}" placeholder="Введите текст"
+                      rows="5"></textarea>
+            <button type="submit" id="editButton">Сохранить</button>
+        </form>
+        <form method="post" action="/delReminder">
+            <input type="hidden" id="deleteReminderId" name="deleteReminderId">
+            <button type="submit" id="deleteReminder">Удалить</button>
+        </form>
+    </div>
+</div>
+<div id="error" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeError()">&times;</span>
+        <h2>Ошибка!</h2>
+        <p id="errorText">Пожалуйста, заполните все поля.</p>
+    </div>
+</div>
+<script src="/js/script.js"></script>
+</body>
+<script th:inline="javascript">
+    function openError() {
+        document.getElementById("error").style.display = "block";
+    }
+
+    function closeError() {
+        document.getElementById("error").style.display = "none";
+    }
+
+    function openModal() {
+        setYearAndMonthForSelect(year);
+        document.getElementById("myModal").style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById("myModal").style.display = "none";
+    }
+
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const day = currentDate.getDay();
+    const monthNames = [
+        "Январь",
+        "Февраль",
+        "Март",
+        "Апрель",
+        "Май",
+        "Июнь",
+        "Июль",
+        "Август",
+        "Сентябрь",
+        "Октябрь",
+        "Ноябрь",
+        "Декабрь",
+    ];
+    const monthName = monthNames[currentDate.getMonth()];
+    const dateString = `${monthName} ${year}`;
+    const dateElement = document.querySelector(".monthAndYear");
+    dateElement.textContent = dateString;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const reminderList = document.querySelectorAll(".reminder");
+        const circleElements = document.querySelectorAll(".circle");
+        const colors = ["#8dd998", "#fa466d", "#ff7a97"];
+
+        reminderList.forEach((reminder, index) => {
+            const backgroundColor = colors[index % colors.length];
+            reminder.style.backgroundColor = backgroundColor;
+            const shadowColor = backgroundColor + "61";
+            reminder.style.boxShadow = `5px 5px 0 ${shadowColor}`;
+            circleElements[index].style.background = backgroundColor;
+        });
+    });
+
+    function setYearAndMonthForSelect(currentYear) {
+        const yearSelect = document.getElementById("yearSelect");
+        const monthSelect = document.getElementById("monthSelect");
+        yearSelect.innerHTML = "";
+        for (let year = currentYear - 5; year <= currentYear + 5; year++) {
+            const option = document.createElement("option");
+            option.value = year;
+            option.textContent = year;
+            if (year === currentYear) {
+                option.selected = true;
+            }
+            yearSelect.appendChild(option);
+        }
+        const currentMonth = new Date().getMonth();
+        monthSelect.value = currentMonth;
+        generateDays(currentMonth);
+        document.getElementById("daySelect").value = day;
+    }
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const reminderList = document.getElementById("reminderList");
+
+        reminderList.addEventListener("click", (event) => {
+            const reminderElement = event.target.closest(".reminder");
+            if (reminderElement) {
+                const reminderId = reminderElement.id;
+                editReminder(reminderId, reminderElement);
+            }
+        });
+    });
+
+    function editReminder(reminderId, reminderElement) {
+        let reminders = [[${reminders}]];
+        for (let i = 0; i < reminders.length; i++) {
+            if (parseInt(reminderId) === parseInt(reminders[i].id)) {
+                console.log(reminderId)
+                document.getElementById("editReminderId").value = reminderId;
+                document.getElementById("deleteReminderId").value = reminderId;
+
+                document.getElementById("editReminderInput").value = reminders[i].title;
+                setYearAndMonthForSelectForEdit(reminders[i].year, reminders[i].month);
+                document.getElementById("editDaySelect").value = reminders[i].day;
+                let selectElement = document.getElementById("editReminderRepeat");
+                for (let j = 0; j < selectElement.options.length; j++) {
+                    if (selectElement.options[j].value === reminders[i].repeat) {
+                        selectElement.options[j].selected = true;
+                        break;
+                    }
+                }
+                let selectElementMonth = document.getElementById("editMonthSelect");
+                for (let j = 0; j < selectElementMonth.options.length; j++) {
+                    if (selectElementMonth.options[j].value.toString() === reminders[i].month.toString()) {
+                        selectElementMonth.options[j].selected = true;
+                        break;
+                    }
+                }
+                let selectElementDay = document.getElementById("editDaySelect");
+                for (let j = 0; j < selectElementDay.options.length; j++) {
+                    if (selectElementDay.options[j].value === reminders[i].day) {
+                        selectElementDay.options[j].selected = true;
+                        break;
+                    }
+                }
+                document.getElementById("editReminderTime").value = reminders[i].time;
+                document.getElementById("reminderDetailsForEdit").value = reminders[i].description;
+            }
+        }
+        const editModal = document.getElementById("editModal");
+        editModal.style.display = "block";
+
+    }
+
+    function setYearAndMonthForSelectForEdit(currentYear, currentMonth) {
+        const yearSelect = document.getElementById("editYearSelect");
+        yearSelect.innerHTML = "";
+        for (let year = currentYear - 5; year <= currentYear + 5; year++) {
+            const option = document.createElement("option");
+            option.value = year;
+            option.textContent = year;
+            if (year === currentYear) {
+                option.selected = true;
+            }
+            yearSelect.appendChild(option);
+        }
+        const daySelect = document.getElementById("editDaySelect");
+        daySelect.innerHTML = '';
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        for (let day = 1; day <= daysInMonth; day++) {
+            const option = document.createElement("option");
+            option.value = day;
+            option.textContent = day;
+            daySelect.appendChild(option);
+        }
+    }
+
+
+    function closeEditModal() {
+        document.getElementById("editModal").style.display = "none";
+    }
+
+
+    function openCalendar() {
+        const calendarContainer = document.getElementById("calendarContainer");
+        calendarContainer.innerHTML = "";
+        document.getElementById("calendarModal").style.display = "block";
+        populateYearSelect(year);
+        document.getElementById("monthSelectCalendar").value = month;
+
+        generateCalendar(year, month);
+    }
+
+    function populateYearSelect(currentYear) {
+        const yearSelect = document.getElementById("yearSelectCalendar");
+        yearSelect.innerHTML = "";
+        for (let year = currentYear - 5; year <= currentYear + 5; year++) {
+            const option = document.createElement("option");
+            option.value = year;
+            option.textContent = year;
+            if (year === currentYear) {
+                option.selected = true;
+            }
+            yearSelect.appendChild(option);
+        }
+    }
+
+    document
+        .getElementById("yearSelectCalendar")
+        .addEventListener("change", updateCalendar);
+    document
+        .getElementById("monthSelectCalendar")
+        .addEventListener("change", updateCalendar);
+
+    function updateCalendar() {
+        const year = parseInt(document.getElementById("yearSelectCalendar").value);
+        const month = parseInt(document.getElementById("monthSelectCalendar").value);
+
+        generateCalendar(year, month);
+    }
+
+    function generateCalendar(year, month) {
+        const calendarContainer = document.getElementById("calendarContainer");
+        calendarContainer.innerHTML = "";
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const firstDay = new Date(year, month, 1).getDay();
+
+        const dayHeaders = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"];
+        dayHeaders.forEach((day) => {
+            const header = document.createElement("div");
+            header.textContent = day;
+            header.className = "day-header";
+            calendarContainer.appendChild(header);
+        });
+
+        for (let i = 0; i < (firstDay + 6) % 7; i++) {
+            const emptyCell = document.createElement("div");
+            calendarContainer.appendChild(emptyCell);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayCell = document.createElement("div");
+            dayCell.textContent = day;
+            dayCell.onclick = () => showRemindersForDate(year, month, day);
+            calendarContainer.appendChild(dayCell);
+            document.getElementById("selected-year").value = year;
+        }
+    }
+
+    function closeCalendar() {
+        document.getElementById("calendarModal").style.display = "none";
+    }
+
+    function showRemindersForDate(year, month, day) {
+        document.getElementById("selected-year").value = year;
+        document.getElementById("selected-month").value = month + 1;
+        document.getElementById("selected-day").value = day;
+    }
+
+    document.querySelector(".monthAndYear").addEventListener("click", openCalendar);
+
+    document.getElementById("monthSelect").addEventListener("change", () => {
+        const month = parseInt(document.getElementById("monthSelect").value, 10);
+        generateDays(month);
+    });
+
+    function generateDays(month) {
+        const daySelect = document.getElementById("daySelect");
+        daySelect.innerHTML = '';
+        const currentYear = new Date().getFullYear();
+        const daysInMonth = new Date(currentYear, month + 1, 0).getDate();
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const option = document.createElement("option");
+            option.value = day;
+            option.textContent = day;
+            daySelect.appendChild(option);
+        }
+    }
+
+</script>
+
+</html>
