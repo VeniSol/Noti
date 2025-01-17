@@ -1,298 +1,342 @@
 * {
-  font-family: "Comfortaa", sans-serif;
-  font-style: inherit;
-  font-weight: 700;
-  text-decoration: none;
-  list-style: none;
-  scroll-behavior: smooth;
+    font-family: "Comfortaa", sans-serif;
+    font-style: inherit;
+    font-weight: 700;
+    text-decoration: none;
+    list-style: none;
+    scroll-behavior: smooth;
 }
+
 *,
 *:after,
 *:before {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-  transition: 0.5s ease-in-out;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    transition: 0.5s ease-in-out;
 }
+
 body,
 html {
-  height: 100%;
-  overflow: hidden;
+    height: 100%;
+    overflow: auto;
 }
+
+.reminder .title,
+.reminder .time {
+    font-size: 1em;
+    margin-bottom: 5px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .app-container {
-  min-height: 100%;
-  margin: auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-  overflow: hidden;
-  width: 100%;
-  background-image: linear-gradient(35deg, #d93c57, #5d2444, #2d1e3d);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    margin: auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+    width: 100%;
+    background-image: linear-gradient(35deg, #d93c57, #5d2444, #2d1e3d);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
 .content {
-  padding: 0 15px;
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  max-width: 500px;
-  justify-content: center;
-  max-height: 65vh;
-  overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 500px;
+    justify-content: center;
+    height: calc(100vh - 232px);
+    overflow: auto;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
 .add-reminder {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  border: transparent;
-  background-color: #fa466d;
-  color: #fff0f6;
-  font-size: 2.4em;
-  font-weight: 400;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-.header {
-  padding: 20px 0;
-  color: #ffffff;
-  text-align: center;
-  font-size: 2em;
-  position: relative;
-}
-.reminder-item {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.reminder {
-  color: #fff0f6;
-  border-radius: 6px;
-  margin: 20px 0;
-  padding: 5px;
-  width: 84%;
-  word-wrap: break-word;
-  white-space: normal;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-}
-.reminder-list {
-  width: 100%;
-  margin: 0 15px;
-}
-.content::-webkit-scrollbar {
-  width: 5px;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    border: transparent;
+    background-color: #fa466d;
+    color: #fff0f6;
+    font-size: 2.4em;
+    font-weight: 400;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin: 12px;
 }
 
-.content::-webkit-scrollbar-thumb {
-  background: black;
-  border-radius: 10px;
+.header {
+    padding: 20px 0;
+    color: #ffffff;
+    text-align: center;
+    font-size: 2em;
+    position: relative;
+    height: 75px;
+}
+
+.reminder-item {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5px;
+}
+
+.reminder {
+    color: #fff0f6;
+    border-radius: 6px;
+    margin: 15px 0;
+    word-wrap: break-word;
+    white-space: normal;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    min-width: 265px;
+    width: 100%;
+}
+
+.reminder-list {
+    width: 100%;
+    margin: 0 15px;
+}
+
+.point {
+    padding: 0 2px;
+}
+
+*::-webkit-scrollbar {
+    display: none;
 }
 
 .modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
-  padding-top: 50%;
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
 }
-#error{
-  padding-top: 0;
-}
+
 .modal-content {
-  background-color: #fff0f6;
-  margin: 5% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  max-width: 350px;
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  position: relative;
+    margin: 20vh auto;
+    padding: 20px;
+    border: 1px solid #888;
+    max-width: 350px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    background-image: linear-gradient(35deg, #d93c57, #5d2444, #2d1e3d);
+    color: #fff0f6;
+    border-color: #d93c57;
 }
+
 .modal-content h2 {
-  margin-bottom: 20px;
-  text-align: center;
+    margin-bottom: 15px;
 }
-.modal-content input,select,textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 2px solid #fa466d;
-  margin-top: 5px;
+
+.modal-content input,
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 2px solid #fa466d;
+    margin-top: 5px;
 }
-.date-content{
-  display: flex;
-  width: 100%;  
-  gap: 5px;
+
+.date-content {
+    display: flex;
+    width: 100%;
+    gap: 5px;
 }
-.date-content select:first-child{
-  width: auto;
+
+.date-content select:first-child {
+    width: auto;
 }
 
 .modal-content button {
-  margin-top: 20px;
-  padding: 6px 12px;
-  border: none;
-  background-color: #fa466d;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1.2em;
-  margin: 10px 10px 0 10px;
+    padding: 10px 12px;
+    border: none;
+    background-color: #fa466d;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin: 10px 0 0 0;
 }
-button:hover{
-  background-color: #d93c57;
+
+button:hover {
+    background-color: #d93c57;
 }
 
 .close {
-  color: #aaa;
-  font-size: 28px;
-  font-weight: bold;
-  position: absolute;
-  top: 10px;
-  right: 20px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
 }
 
 .close:hover,
 .close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
+    color: #858585;
+    cursor: pointer;
 }
+
 .circle {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+    min-width: 12px;
+    min-height: 12px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
 }
+
 .monthAndYear {
-  background: #fa466d;
-  padding: 20px 0;
-  margin: 0 15px;
-  border-radius: 12px;
-  font-size: 1.3em;
-  color: #fff0f6;
-  text-align: center;
-  margin-bottom: 15px;
-  width: 500px;
+    background: #fa466d;
+    padding: 20px 0;
+    border-radius: 12px;
+    font-size: 1.3em;
+    color: #fff0f6;
+    text-align: center;
+    width: 100%;
+    height: 63px;
 }
-.day {
-  color: #fff0f6;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+
+.date-info {
+    color: #fff0f6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 5px;
 }
+
+.day-and-month {
+    padding: 5px;
+    display: flex;
+    width: 53px;
+    justify-content: center;
+}
+
 .notification img {
-  height: 22px;
+    height: 22px;
 }
+
 .notification {
-  text-align: right;
+    text-align: right;
 }
-.title {
-  margin-bottom: 8px;
-}
-.modal-content {
-  background-image: linear-gradient(35deg, #d93c57, #5d2444, #2d1e3d);
-  color: #fff0f6;
-  border-color: #d93c57;
-}
+
 #calendarContainer {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
-  margin-top: 20px;
-  color: black;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 20px;
+    color: black;
 }
 
 #calendarContainer div {
-  text-align: center;
-  padding: 10px;
-  border-radius: 4px;
-  background-color: #f0f0f0;
-  cursor: pointer;
+    text-align: center;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    cursor: pointer;
 }
 
 #calendarContainer div:hover {
-  background-color: #d93c57;
-  color: white;
+    background-color: #d93c57;
+    color: white;
 }
 
 #calendarContainer .day-header {
-  font-weight: bold;
-  background-color: #fa466d;
-  color: white;
-}
-.show-all,.show-by-parameters {
-  margin-top: 15px;
-  padding: 10px 15px;
-  background-color: #fa466d;
-  color: #fff0f6;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1em;
+    font-weight: bold;
+    background-color: #fa466d;
+    color: white;
 }
 
-.show-all:hover,.show-by-parameters:hover {
-  background-color: #d93c57;
-}
-.show-by-parameters:active{
-  background-color: #9e1d33;
-}
 .calendar-controls {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
 }
 
 .calendar-controls select {
-  padding: 5px;
-  font-size: 14px;
-  width: auto;
+    padding: 5px;
+    font-size: 14px;
+    width: auto;
 }
 
-@media (min-width: 1024px){
-  .app-container {
-    width: 35%;
-    border-radius: 20px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #fa466d;
-    min-height: 97%;
-  }
-  .content{
-    max-height: 62vh;
-  }
-  .modal{
-    padding-top: 20px;
-  }
-  .add-reminder {
-    bottom: 25px;
-  }
+@media (min-width: 1124px) {
+    .app-container {
+        width: 430px;
+        border-radius: 20px;
+        margin-top: 5px;
+        border: 1px solid #fa466d;
+        min-height: calc(100vh - 12px);
+    }
+    .modal-content {
+        margin: 20vh auto;
+    }
+
+    .monthAndYear {
+        border-radius: 0;
+    }
 }
+@media (max-width: 1124px) {
+    .content {
+        height: calc(100vh - 218px);
+    }
+}
+
 @media (max-width: 768px) {
-  .app-container {
-    max-width: auto;
-    border-radius: 0;
-    box-shadow: none;
-  }
-  .reminder{
-    width: 75%;
-  }
+    .app-container {
+        border-radius: 0;
+        box-shadow: none;
+        overflow: hidden;
+        min-height: 100vh;
+    }
+    .monthAndYear {
+        border-radius: 0;
+    }
+}
+
+@media (max-height: 620px) {
+    .modal-content {
+        margin: 10vh auto;
+    }
+}
+
+@media (max-height: 535px) {
+    .modal-content {
+        margin: 3vh auto;
+    }
+    .modal {
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 390px) {
+    .circle {
+        display: none;
+    }
+    .date-info {
+        padding-left: 0;
+    }
+    .reminder-item {
+        padding-left: 0;
+    }
 }

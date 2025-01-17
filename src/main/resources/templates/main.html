@@ -7,58 +7,25 @@
     <title>Noti</title>
     <link rel="stylesheet" type="text/css"
           href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap">
-    <link rel="stylesheet" type="text/css" href="/css/style.css">
-    <link rel="shortcut icon" href="img/5173002_alarm_alert_bell_internet_notice_icon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="/css/style.css?26">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-
 <body>
-<form>
-    <button type="submit" action="/addReminder"></button>
-</form>
 <div class="app-container">
     <div class="header">
         Noti
     </div>
     <div class="monthAndYear"></div>
-    <div id="calendarModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeCalendar()">&times;</span>
-            <h2>Выберите дату</h2>
-            <form>
-                <input type="hidden" name="year" id="selected-year">
-                <input type="hidden" name="month" id="selected-month">
-                <input type="hidden" name="day" id="selected-day">
-                <button type="submit" class="show-by-parameters">Показать Noti</button>
-            </form>
-            <div class="calendar-controls">
-                <select id="yearSelectCalendar">
-                </select>
-                <select id="monthSelectCalendar">
-                    <option value="0">Январь</option>
-                    <option value="1">Февраль</option>
-                    <option value="2">Март</option>
-                    <option value="3">Апрель</option>
-                    <option value="4">Май</option>
-                    <option value="5">Июнь</option>
-                    <option value="6">Июль</option>
-                    <option value="7">Август</option>
-                    <option value="8">Сентябрь</option>
-                    <option value="9">Октябрь</option>
-                    <option value="10">Ноябрь</option>
-                    <option value="11">Декабрь</option>
-                </select>
-            </div>
-            <div id="calendarContainer"></div>
-        </div>
-    </div>
     <div class="content">
         <div class="reminder-list" id="reminderList">
             <div th:each="reminder : ${reminders}" class="reminder-item">
                 <div class="circle"></div>
-                <div class="day">
-                    <div class="day" th:text="${reminder.day}"></div>
-                    .
-                    <div class="month" th:text="${reminder.month}"></div>
+                <div class="date-info">
+                    <div class="day-and-month">
+                        <div class="day" th:text="${reminder.day}"></div>
+                        <div class="point">.</div>
+                        <div class="month" th:text="${reminder.month}"></div>
+                    </div>
                     <div class="dayOfWeek" th:text="${reminder.dayOfWeek}"></div>
                     <div class="year" th:text="${reminder.getYear()}" style="display: none"></div>
                 </div>
@@ -77,15 +44,46 @@
         </div>
 
     </div>
-    <button class="add-reminder" onclick="openModal()">+</button>
+    <button class="add-reminder" onclick="openAddModal()">+</button>
 </div>
-
-<div id="myModal" class="modal">
-    <form action="/addReminder" method="POST" th:object="${reminder}">
+<div id="calendarModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeCalendar()">&times;</span>
+        <h2>Выберите дату</h2>
+        <form>
+            <input type="hidden" name="year" id="selected-year">
+            <input type="hidden" name="month" id="selected-month">
+            <input type="hidden" name="day" id="selected-day">
+            <button type="submit" class="show-by-parameters">Показать Noti</button>
+        </form>
+        <div class="calendar-controls">
+            <select id="yearSelectCalendar">
+            </select>
+            <select id="monthSelectCalendar">
+                <option value="0">Январь</option>
+                <option value="1">Февраль</option>
+                <option value="2">Март</option>
+                <option value="3">Апрель</option>
+                <option value="4">Май</option>
+                <option value="5">Июнь</option>
+                <option value="6">Июль</option>
+                <option value="7">Август</option>
+                <option value="8">Сентябрь</option>
+                <option value="9">Октябрь</option>
+                <option value="10">Ноябрь</option>
+                <option value="11">Декабрь</option>
+            </select>
+        </div>
+        <div id="calendarContainer"></div>
+    </div>
+</div>
+<div id="addModal" class="modal">
+    <form id="addForm" action="/addReminder" method="POST" th:object="${reminder}">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
+            <span class="close" onclick="closeAddModal()">&times;</span>
             <h2>Добавить Noti</h2>
-            <input type="text" id="reminderInput" placeholder="Введите название" th:field="*{title}" required>
+            <input type="text" id="reminderInput" placeholder="Введите название (до 12 символов)" th:field="*{title}"
+                   maxlength="12" required>
             <div class="date-content">
                 <select id="daySelect" th:field="*{day}">
                 </select>
@@ -125,7 +123,8 @@
         <h2>Редактировать напоминание</h2>
         <form action="/editReminder" method="post" th:object="${updateReminder}">
             <input type="hidden" id="editReminderId" name="editReminderId">
-            <input type="text" id="editReminderInput" placeholder="Введите название" th:field="*{title}" required>
+            <input type="text" id="editReminderInput" placeholder="Введите название (до 12 символов)"
+                   th:field="*{title}" maxlength="12" required>
             <div class="date-content">
                 <select id="editDaySelect" th:field="*{day}">
                 </select>
@@ -163,37 +162,13 @@
         </form>
     </div>
 </div>
-<div id="error" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeError()">&times;</span>
-        <h2>Ошибка!</h2>
-        <p id="errorText">Пожалуйста, заполните все поля.</p>
-    </div>
-</div>
-<script src="/js/script.js"></script>
 </body>
 <script th:inline="javascript">
-    function openError() {
-        document.getElementById("error").style.display = "block";
-    }
-
-    function closeError() {
-        document.getElementById("error").style.display = "none";
-    }
-
-    function openModal() {
-        setYearAndMonthForSelect(year);
-        document.getElementById("myModal").style.display = "block";
-    }
-
-    function closeModal() {
-        document.getElementById("myModal").style.display = "none";
-    }
-
+    let tg = window.Telegram.WebApp;
+    document.getElementById('addForm').action = "/addReminder/"+tg.initDataUnsafe.user.id;
     const currentDate = new Date();
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    const day = currentDate.getDay();
     const monthNames = [
         "Январь",
         "Февраль",
@@ -211,6 +186,7 @@
     const monthName = monthNames[currentDate.getMonth()];
     const dateString = `${monthName} ${year}`;
     const dateElement = document.querySelector(".monthAndYear");
+
     dateElement.textContent = dateString;
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -226,27 +202,6 @@
             circleElements[index].style.background = backgroundColor;
         });
     });
-
-    function setYearAndMonthForSelect(currentYear) {
-        const yearSelect = document.getElementById("yearSelect");
-        const monthSelect = document.getElementById("monthSelect");
-        yearSelect.innerHTML = "";
-        for (let year = currentYear - 5; year <= currentYear + 5; year++) {
-            const option = document.createElement("option");
-            option.value = year;
-            option.textContent = year;
-            if (year === currentYear) {
-                option.selected = true;
-            }
-            yearSelect.appendChild(option);
-        }
-        const currentMonth = new Date().getMonth();
-        monthSelect.value = currentMonth;
-        generateDays(currentMonth);
-        document.getElementById("daySelect").value = day;
-    }
-
-
     document.addEventListener("DOMContentLoaded", () => {
         const reminderList = document.getElementById("reminderList");
 
@@ -254,19 +209,65 @@
             const reminderElement = event.target.closest(".reminder");
             if (reminderElement) {
                 const reminderId = reminderElement.id;
-                editReminder(reminderId, reminderElement);
+                editReminder(reminderId);
             }
         });
     });
 
-    function editReminder(reminderId, reminderElement) {
+
+    function openAddModal() {
+        setYearAndMonthForSelectForAdd(year);
+        document.getElementById("addModal").style.display = "block";
+        let selectElementMonth = document.getElementById("monthSelect");
+        for (let j = 0; j < selectElementMonth.options.length; j++) {
+            if (parseInt(selectElementMonth.options[j].value) === month+1) {
+                selectElementMonth.options[j].selected = true;
+                break;
+            }
+        }
+
+    }
+    function closeAddModal() {
+        document.getElementById("addModal").style.display = "none";
+
+    }
+    function createOptions(selectElement, startValue, endValue) {
+        selectElement.innerHTML = "";
+        for (let value = startValue; value <= endValue; value++) {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
+            selectElement.appendChild(option);
+        }
+
+    }
+    function setYearAndMonthForSelectForAdd(currentYear) {
+        const yearSelect = document.getElementById("yearSelect");
+        createOptions(yearSelect, currentYear, currentYear + 3);
+        const currentMonth = new Date().getMonth();
+        generateDaysForAdd(currentMonth,currentYear);
+        document.getElementById("daySelect").value = new Date().getDate();
+
+    }
+    function setYearAndMonthForSelectForEdit(currentYear, currentMonth) {
+        const yearSelect = document.getElementById("editYearSelect");
+        const daySelect = document.getElementById("editDaySelect");
+        createOptions(yearSelect, currentYear, currentYear + 3);
+        generateDaysForEdit(currentMonth,currentYear);
+
+    }
+    function setYearAndMonthForSelectForCalendar(currentYear) {
+        const yearSelect = document.getElementById("yearSelectCalendar");
+        createOptions(yearSelect, currentYear, currentYear + 3);
+
+    }
+
+    function editReminder(reminderId) {
         let reminders = [[${reminders}]];
         for (let i = 0; i < reminders.length; i++) {
             if (parseInt(reminderId) === parseInt(reminders[i].id)) {
-                console.log(reminderId)
                 document.getElementById("editReminderId").value = reminderId;
                 document.getElementById("deleteReminderId").value = reminderId;
-
                 document.getElementById("editReminderInput").value = reminders[i].title;
                 setYearAndMonthForSelectForEdit(reminders[i].year, reminders[i].month);
                 document.getElementById("editDaySelect").value = reminders[i].day;
@@ -274,6 +275,13 @@
                 for (let j = 0; j < selectElement.options.length; j++) {
                     if (selectElement.options[j].value === reminders[i].repeat) {
                         selectElement.options[j].selected = true;
+                        break;
+                    }
+                }
+                let selectElementYear = document.getElementById("editYearSelect");
+                for (let j = 0; j < selectElementYear.options.length; j++) {
+                    if (selectElementYear.options[j].value.toString() === reminders[i].year.toString()) {
+                        selectElementYear.options[j].selected = true;
                         break;
                     }
                 }
@@ -295,62 +303,20 @@
                 document.getElementById("reminderDetailsForEdit").value = reminders[i].description;
             }
         }
-        const editModal = document.getElementById("editModal");
-        editModal.style.display = "block";
-
+        document.getElementById("editModal").style.display = "block";
     }
-
-    function setYearAndMonthForSelectForEdit(currentYear, currentMonth) {
-        const yearSelect = document.getElementById("editYearSelect");
-        yearSelect.innerHTML = "";
-        for (let year = currentYear - 5; year <= currentYear + 5; year++) {
-            const option = document.createElement("option");
-            option.value = year;
-            option.textContent = year;
-            if (year === currentYear) {
-                option.selected = true;
-            }
-            yearSelect.appendChild(option);
-        }
-        const daySelect = document.getElementById("editDaySelect");
-        daySelect.innerHTML = '';
-        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        for (let day = 1; day <= daysInMonth; day++) {
-            const option = document.createElement("option");
-            option.value = day;
-            option.textContent = day;
-            daySelect.appendChild(option);
-        }
-    }
-
 
     function closeEditModal() {
         document.getElementById("editModal").style.display = "none";
     }
 
-
     function openCalendar() {
         const calendarContainer = document.getElementById("calendarContainer");
         calendarContainer.innerHTML = "";
         document.getElementById("calendarModal").style.display = "block";
-        populateYearSelect(year);
+        setYearAndMonthForSelectForCalendar(year);
         document.getElementById("monthSelectCalendar").value = month;
-
         generateCalendar(year, month);
-    }
-
-    function populateYearSelect(currentYear) {
-        const yearSelect = document.getElementById("yearSelectCalendar");
-        yearSelect.innerHTML = "";
-        for (let year = currentYear - 5; year <= currentYear + 5; year++) {
-            const option = document.createElement("option");
-            option.value = year;
-            option.textContent = year;
-            if (year === currentYear) {
-                option.selected = true;
-            }
-            yearSelect.appendChild(option);
-        }
     }
 
     document
@@ -363,7 +329,6 @@
     function updateCalendar() {
         const year = parseInt(document.getElementById("yearSelectCalendar").value);
         const month = parseInt(document.getElementById("monthSelectCalendar").value);
-
         generateCalendar(year, month);
     }
 
@@ -409,15 +374,40 @@
 
     document.getElementById("monthSelect").addEventListener("change", () => {
         const month = parseInt(document.getElementById("monthSelect").value, 10);
-        generateDays(month);
+        generateDaysForAdd(month,year);
+    });
+    document.getElementById("editMonthSelect").addEventListener("change", () => {
+        const month = parseInt(document.getElementById("editMonthSelect").value, 10);
+        const year= parseInt(document.getElementById("editYearSelect").value, 10);
+        generateDaysForEdit(month,year);
+    });
+    document.getElementById("yearSelect").addEventListener("change", () => {
+        const month = parseInt(document.getElementById("monthSelect").value, 10);
+        const year= parseInt(document.getElementById("yearSelect").value, 10);
+        generateDaysForAdd(month,year);
+    });
+    document.getElementById("editYearSelect").addEventListener("change", () => {
+        const month = parseInt(document.getElementById("editMonthSelect").value, 10);
+        const year= parseInt(document.getElementById("editYearSelect").value, 10);
+        generateDaysForEdit(month,year);
     });
 
-    function generateDays(month) {
+    function generateDaysForAdd(month,year) {
         const daySelect = document.getElementById("daySelect");
         daySelect.innerHTML = '';
-        const currentYear = new Date().getFullYear();
-        const daysInMonth = new Date(currentYear, month + 1, 0).getDate();
+        const daysInMonth = new Date(year, month, 0).getDate();
 
+        for (let day = 1; day <= daysInMonth; day++) {
+            const option = document.createElement("option");
+            option.value = day;
+            option.textContent = day;
+            daySelect.appendChild(option);
+        }
+    }
+    function generateDaysForEdit(month,year) {
+        const daySelect = document.getElementById("editDaySelect");
+        daySelect.innerHTML = '';
+        const daysInMonth = new Date(year, month, 0).getDate();
         for (let day = 1; day <= daysInMonth; day++) {
             const option = document.createElement("option");
             option.value = day;
