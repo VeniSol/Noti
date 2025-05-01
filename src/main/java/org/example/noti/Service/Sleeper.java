@@ -2,6 +2,7 @@ package org.example.noti.Service;
 
 import jakarta.annotation.PostConstruct;
 import org.example.noti.Entities.Reminder;
+import org.example.noti.Models.Status;
 import org.example.noti.Repositories.ReminderRepository;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -30,23 +31,28 @@ public class Sleeper {
     private void startSendingMessage() {
         Thread thread = new Thread(() -> {
             while (true) {
+                System.out.println(111);
                 try {
+                    System.out.println("remCount "+reminderRepository.getRemindersCount());
                     if (reminderRepository.getRemindersCount() == 0) {
                         break;
                     }
+
                     long timeBeforeNextCall = getTimeBeforeNextCall();
                     if (timeBeforeNextCall < 0) timeBeforeNextCall=0L;
                     Thread.sleep(timeBeforeNextCall);
-                    List<Reminder> reminders = reminderRepository.findByNextCall(reminderRepository.getNextCall());
-                    sendMessage(reminders);
+                    LocalDateTime nextCallDateTime = reminderRepository.getNextCall();
+                    List<Reminder> reminders = reminderRepository.findByNextCall(nextCallDateTime);
                     editReminder(reminders);
+                    sendMessage(reminders);
                 } catch (InterruptedException | TelegramApiException e){
+                    System.out.println(e);
                     e.printStackTrace();
-                }
+                   }
             }
         });
         currentThread = thread;
-        thread.start();
+        currentThread.start();
     }
 
     private void sendMessage(List<Reminder> reminders) throws TelegramApiException {
@@ -60,7 +66,10 @@ public class Sleeper {
             int durationBeforeRepeat = 0;
             int dayMinutes = 24 * 60;
             switch (reminder.getRepeat()) {
-                case "Один раз" -> reminder.setNextCall(null);
+                case "Один раз" -> {
+                    reminder.setNextCall(null);
+                    reminder.setStatus(Status.ENDED);
+                }
                 case "Ежедневно" -> durationBeforeRepeat = dayMinutes;
                 case "Еженедельно" -> durationBeforeRepeat = 7 * dayMinutes;
                 case "Ежемесячно" -> {

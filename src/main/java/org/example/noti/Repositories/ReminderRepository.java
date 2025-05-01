@@ -2,6 +2,7 @@ package org.example.noti.Repositories;
 
 import org.example.noti.Entities.Reminder;
 import org.example.noti.Entities.User;
+import org.example.noti.Models.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface ReminderRepository extends JpaRepository<Reminder, Integer> {
-    List<Reminder> findByYearAndMonthAndDayAndUser(int year, int month, int day,User user);
+    List<Reminder> findByYearAndMonthAndDayAndUserAndStatus(int year, int month, int day,User user,Status status);
     Reminder findById(int id);
     List<Reminder> findByUser(User user);
     @Query("SELECT MIN(e.nextCall) FROM Reminder e")
@@ -20,4 +21,6 @@ public interface ReminderRepository extends JpaRepository<Reminder, Integer> {
     List<Reminder> findByNextCall(LocalDateTime nextCall);
     @Query("SELECT COUNT(r) FROM Reminder r WHERE r.nextCall IS NOT NULL")
     int getRemindersCount();
+
+    List<Reminder> findByUserAndStatus(User user, Status status);
 }

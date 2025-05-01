@@ -24,12 +24,11 @@ public class MessageSender {
 
     private String generateMessageFromReminder(Reminder reminder) {
         StringBuilder builder = new StringBuilder();
-        builder.append(reminder.getTitle()).append("\n\n");
+        builder.append("Вам новое напоминание: ").append(reminder.getTitle()).append("\n\n");
 
         if (!reminder.getDescription().isEmpty())
             builder.append("Описание: ").append(reminder.getDescription()).append("\n\n");
 
-        // Информация о следующем повторе
         if (!reminder.getRepeat().equals("Один раз")) {
             builder.append("Следующее напоминание: ").append(reminder.getNextCall().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))).append("\n");
         }

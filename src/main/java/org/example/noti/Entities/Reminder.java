@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.noti.Models.Status;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
@@ -27,6 +28,8 @@ public class Reminder {
     private String repeat;
     private String dayOfWeek;
     private LocalDateTime nextCall;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

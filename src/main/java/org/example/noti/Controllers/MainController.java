@@ -3,6 +3,7 @@ package org.example.noti.Controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.noti.Entities.Reminder;
 import org.example.noti.Entities.User;
+import org.example.noti.Models.Status;
 import org.example.noti.Repositories.ReminderRepository;
 import org.example.noti.Repositories.UserRepository;
 import org.example.noti.Service.Sleeper;
@@ -45,7 +46,7 @@ public class MainController {
         }
         User user = userRepository.findByTelegram(id);
         user.setReminders(null);
-        List<Reminder> reminders = reminderRepository.findByUser(user);
+        List<Reminder> reminders = reminderRepository.findByUserAndStatus(user, Status.ACTIVE);
         for (Reminder reminder : reminders) {
             reminder.setUser(null);
         }
@@ -67,17 +68,17 @@ public class MainController {
         String month = request.getParameter("month");
         String day = request.getParameter("day");
         if ((year == null || month == null || day == null) || day.isEmpty()) return null;
-        return reminderRepository.findByYearAndMonthAndDayAndUser(
-                Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day), user);
+        return reminderRepository.findByYearAndMonthAndDayAndUserAndStatus(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day), user, Status.ACTIVE);
     }
 
     @PostMapping("/addReminder/{id}")
-    public String addReminder(@PathVariable int id,@ModelAttribute("reminder") Reminder reminder) {
+    public String addReminder(@PathVariable int id, @ModelAttribute("reminder") Reminder reminder) {
         User user = userRepository.findByTelegram(id);
         reminder.setUser(user);
         reminder.setDayOfWeek(getDayOfWeek(reminder.getYear(), reminder.getMonth(), reminder.getDay()));
         reminder.setId(0);
-        reminder.setNextCall(LocalDateTime.of(reminder.getYear(),reminder.getMonth(),reminder.getDay(),reminder.getTime().getHour(),reminder.getTime().getMinute()));
+        reminder.setStatus(Status.ACTIVE);
+        reminder.setNextCall(LocalDateTime.of(reminder.getYear(), reminder.getMonth(), reminder.getDay(), reminder.getTime().getHour(), reminder.getTime().getMinute()));
         reminderRepository.save(reminder);
         sleeper.startThread();
         return "redirect:/";
@@ -86,18 +87,23 @@ public class MainController {
     @PostMapping("/delReminder")
     public String delReminder(HttpServletRequest request) {
         int reminderId = Integer.parseInt(request.getParameter("deleteReminderId"));
-        reminderRepository.deleteById(reminderId);
+        Reminder reminder = reminderRepository.findById(reminderId);
+        reminder.setStatus(Status.ENDED);
+        reminder.setNextCall(null);
+        reminderRepository.save(reminder);
         return "redirect:/";
     }
 
     @PostMapping("/editReminder")
     public String editReminder(@ModelAttribute("reminder") Reminder updateReminder, HttpServletRequest request) {
         int reminderId = Integer.parseInt(request.getParameter("editReminderId"));
+        Reminder oldReminder = reminderRepository.findById(reminderId);
         updateReminder.setId(reminderId);
-        User user = reminderRepository.findById(reminderId).getUser();
-        updateReminder.setUser(user);
+        updateReminder.setUser(oldReminder.getUser());
+        updateReminder.setStatus(oldReminder.getStatus());
+
         updateReminder.setDayOfWeek(getDayOfWeek(updateReminder.getYear(), updateReminder.getMonth(), updateReminder.getDay()));
-        updateReminder.setNextCall(LocalDateTime.of(updateReminder.getYear(),updateReminder.getMonth(),updateReminder.getDay(),updateReminder.getTime().getHour(),updateReminder.getTime().getMinute()));
+        updateReminder.setNextCall(LocalDateTime.of(updateReminder.getYear(), updateReminder.getMonth(), updateReminder.getDay(), updateReminder.getTime().getHour(), updateReminder.getTime().getMinute()));
         reminderRepository.save(updateReminder);
         sleeper.startThread();
         return "redirect:/";
